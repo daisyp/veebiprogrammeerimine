@@ -1,5 +1,5 @@
 <?php
-	require("../../../config.php");
+	require("../../config.php");
 	require("functions.php");
 	//echo $serverHost;
 	
@@ -143,7 +143,7 @@
 		signuUp($signupFirstName, $signupFamilyName, $signupBirthDate, $gender, $signupEmail, $signupPassword);
 	}
 	
-	}//if kui oli vajutatud nuppu "Loo kasutaja"
+	//if kui oli vajutatud nuppu "Loo kasutaja"
 	
 	//Tekitame kuupäeva valiku
 	$signupDaySelectHTML = "";
@@ -189,6 +189,7 @@
 	$signupYearSelectHTML.= "</select> \n";
 	
 ?>
+
 <!DOCTYPE html>
 <html lang="et">
 <head>
