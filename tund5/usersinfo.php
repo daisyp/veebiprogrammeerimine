@@ -13,6 +13,12 @@
 		session_destroy();
 		header("Location: login.php");
 	}
+	
+	/*
+		while($stmt->fetch()) {
+			
+		}
+	*/
 ?>
 
 <!DOCTYPE html>

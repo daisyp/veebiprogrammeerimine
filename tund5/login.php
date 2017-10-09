@@ -1,5 +1,5 @@
 <?php
-	require("../../config.php");
+	// require("../../config.php");
 	require("functions.php");
 	//echo $serverHost;
 	
@@ -8,6 +8,9 @@
 		header("Location: main.php");
 		exit();
 	}
+	
+	$ideaHTML = "";
+
 	$signupFirstName = "";
 	$signupFamilyName = "";
 	$gender = "";
@@ -27,6 +30,7 @@
 	$signupPasswordError = "";
 	
 	$loginEmailError ="";
+	$ideaHTML = latestIdea();
 	
 	//kas logitakse sisse
 	if (isset($_POST["loginButton"])){
@@ -48,7 +52,7 @@
 	}//if loginButton
 	
 	//Kõiki kasutaja loomise sisestusi kontrollitakse vaid, kui on vastavat nuppu klikitud
-	if(isset($_POST["signUpButton"])){
+	if(isset($_POST["signUpButton"])){}
 	
 	//kontrollime, kas kirjutati eesnimi
 	if (isset ($_POST["signupFirstName"])){
@@ -78,7 +82,7 @@
 	}
 	
 	//kas sünnikuu on sisestatud
-	if ( isset($_POST["signupBirthMonth"]) ){
+	if (isset($_POST["signupBirthMonth"]) ){
 		$signupBirthMonth = intval($_POST["signupBirthMonth"]);
 	} else {
 		$signupBirthDayError .= " Kuu pole sisestatud!";
@@ -100,7 +104,7 @@
 		} else {
 			$signupBirthDayError .= " Pole korrektne kuupäev!";
 		}
-	} 
+	}
 	
 	//kontrollime, kas kirjutati kasutajanimeks email
 	if (isset ($_POST["signupEmail"])){
@@ -140,7 +144,7 @@
 		$signupPassword = hash("sha512", $_POST["signupPassword"]);
 		//echo "\n Parooli " .$_POST["signupPassword"] ." räsi on: " .$signupPassword;
 		//kutsume välja kasutaja salvestamise funktsiooni
-		signuUp($signupFirstName, $signupFamilyName, $signupBirthDate, $gender, $signupEmail, $signupPassword);
+		signUp($signupFirstName, $signupFamilyName, $signupBirthDate, $gender, $signupEmail, $signupPassword);
 	}
 	
 	//if kui oli vajutatud nuppu "Loo kasutaja"
@@ -197,16 +201,21 @@
 	<title>Sisselogimine või uue kasutaja loomine</title>
 </head>
 <body>
+	<h1>Heade mõtete veeb</h1>
+	<p>Värskeim hea mõte: <span><?php echo $ideaHTML; ?></span></p>
 	<h1>Logi sisse!</h1>
 	<p>Siin harjutame sisselogimise funktsionaalsust.</p>
 	
 	<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
 		<label>Kasutajanimi (E-post): </label>
-		<input name="loginEmail" type="email" value="<?php echo $loginEmail; ?>"><span><?php echo $loginEmailError; ?></span>
+		<input name="loginEmail" type="email" value="<?php echo $loginEmail; ?>">
+		<span><?php echo $loginEmailError; ?></span>
 		<br><br>
-		<input name="loginPassword" placeholder="Salasõna" type="password"><span></span>
+		<input name="loginPassword" placeholder="Salasõna" type="password">
+		<span></span>
 		<br><br>
-		<input name="loginButton" type="submit" value="Logi sisse"><span><?php echo $notice; ?></span>
+		<input name="loginButton" type="submit" value="Logi sisse">
+		<span><?php echo $notice; ?></span>
 	</form>
 	
 	<h1>Loo kasutaja</h1>

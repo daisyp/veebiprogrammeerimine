@@ -1,4 +1,5 @@
 <?php
+	require("../../config.php");
 	$database = "if17_pukkdais";
 	
 	//alustan sessiooni
@@ -9,7 +10,7 @@
 		$notice = "";
 		//ühendus serveriga
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("SELECT id, email, password FROM vpusers WHERE email = ?");
+		$stmt = $mysqli->prepare("SELECT id, email, password FROM veebiproge WHERE email = ?");
 		$stmt->bind_param("s", $email);
 		$stmt->bind_result($id, $emailFromDb, $passwordFromDb);
 		$stmt->execute();
@@ -50,6 +51,7 @@
 		//i - integer
 		//d - decimal
 		$stmt->bind_param("sssiss", $signupFirstName, $signupFamilyName, $signupBirthDate, $gender, $signupEmail, $signupPassword);
+		// sssiss tähendab seda et iga parameetri kohta peab käima mis tüüpi ta on, string integer jnejne 
 		//$stmt->execute();
 		if ($stmt->execute()){
 			echo "\n Õnnestus!";
@@ -58,6 +60,55 @@
 		}
 		$stmt->close();
 		$mysqli->close();
+	}
+	
+	//mõtete salvestamine
+	function saveIdea($idea, $color) {
+		// echo $color; näitab ekraanil mis värvi kasutaja valis
+		$notice = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("INSERT INTO vpuserideas (userid, idea, ideacolor) VALUES (?, ?, ?)");
+		echo $mysqli->error;
+		$stmt->bind_param("iss", $_SESSION["userId"], $idea, $color);
+		if($stmt->execute()) {
+			$notice = "mõte on salvestatud";
+		} else {
+			$notice = "mõtte salvestamisel tekkis viga " .$stmt->error;
+		}
+		$stmt->close();
+		$mysqli->close();
+		return $notice;
+	}
+	
+	//kõikide ideede lugemisefunktsioon
+	function readAllIdeas() {
+		$ideasHTML = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT idea, ideaColor FROM vpuserideas WHERE userid = ? ORDER BY id DESC");
+		$stmt->bind_param("i", $_SESSION["userId"]);
+		$stmt->bind_result($idea, $color);
+		$stmt->execute();
+		// $result = array();
+		while ($stmt->fetch()) {
+			$ideasHTML .= '<p style="background-color:' .$color .'">' .$idea ."<p/> \n";
+		}
+		$stmt->close();
+		$mysqli->close();
+		return $ideasHTML;
+		
+	}
+	
+	// uusima idee lugemine
+	function latestIdea() {
+		// $ideaHTML = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT idea FROM vpuserideas WHERE id = (SELECT MAX(id) FROM vpuserideas)");
+		$stmt->bind_result($idea);
+		$stmt->execute();
+		$stmt->fetch(); // kui fetchi ei tee siis andmeid ei saa
+		$stmt->close();
+		$mysqli->close();
+		return $idea;
 	}
 	
 	//sisestuse kontrollimise funktsioon

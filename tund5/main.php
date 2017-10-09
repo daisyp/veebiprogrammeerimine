@@ -52,6 +52,7 @@
 	<p>See veebileht on loodud veebiprogrammeerimise kursusel ning ei sisalda mingisugust tõsiseltvõetavat sisu.</p>
 	<p><a href="?logout=1">Logi välja</a>!</p>
 	<p><a href="usersinfo.php">Kasutajate info</a></p>
+	<p><a href="usersideas.php">Kasutajate ideed</a></p>
 	<p>Üks pilt Tallinna Ülikoolist!</p>
 	<img src="<?php echo $dirToRead .$picToShow; ?>" alt="Tallinna Ülikool">
 	
