@@ -1,7 +1,9 @@
 <?php
 	require("functions.php");
+	require("../../config.php");
+	$database = "if17_pukkdais";
 	$notice = "";
-	$allIdeas = "";
+	// $allIdeas = "";
 	
 	//kui pole sisseloginud, siis sisselogimise lehele
 	if(!isset($_SESSION["userId"])){
@@ -25,7 +27,7 @@
 		
 	}
 	
-	$allIdeas = readAllIdeas();
+	// $allIdeas = readAllIdeas();
 ?>
 
 <!DOCTYPE html>
@@ -37,8 +39,7 @@
 	</title>
 </head>
 <body>
-	<h1>Daisy</h1>
-	<p>noooooooooooooooooooo sau</p>
+	<h1><?php  echo "Tervist, " .$_SESSION["userFirstName"] ." " .$_SESSION["userLastName"] .".";?></h1>
 	<p><a href="?logout=1">Logi välja</a>!</p>
 	<p><a href="main.php">Pealeht</a></p>
 	<hr>
@@ -57,7 +58,7 @@
 	<hr>
 	<h2>Senised mõtted</h2>
 	<div style="width: 40%>
-		<?php echo $allIdeas; ?>
+		<?php echo readAllIdeas(); ?>
 	</div>
 	
 	

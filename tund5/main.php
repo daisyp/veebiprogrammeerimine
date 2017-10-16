@@ -12,6 +12,7 @@
 		//lõpetame sessiooni
 		session_destroy();
 		header("Location: login.php");
+		exit();
 	}
 	$dirToRead = "../../pics/";
 	//kuna tahan ainult pildifaile, siis filtreerin

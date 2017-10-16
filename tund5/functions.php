@@ -10,9 +10,9 @@
 		$notice = "";
 		//ühendus serveriga
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("SELECT id, email, password FROM veebiproge WHERE email = ?");
+		$stmt = $mysqli->prepare("SELECT id, email, password, firstname, lastname FROM veebiproge WHERE email = ?");
 		$stmt->bind_param("s", $email);
-		$stmt->bind_result($id, $emailFromDb, $passwordFromDb);
+		$stmt->bind_result($id, $emailFromDb, $passwordFromDb, $firstNameDb, $lastNameDb);
 		$stmt->execute();
 		
 		//kontrollime vastavust
@@ -24,6 +24,8 @@
 				//Määran sessiooni muutujad
 				$_SESSION["userId"] = $id;
 				$_SESSION["userEmail"] = $emailFromDb;
+				$_SESSION["userFirstName"] = $firstNameDb;
+				$_SESSION["userLastName"] = $lastNameDb;
 				
 				//liigume edasi pealehele (main.php)
 				header("Location: main.php");
@@ -34,8 +36,6 @@
 		} else {
 			$notice = 'Sellise kasutajatunnusega "' .$email .'" pole registreeritud!';
 		}
-		$stmt->close();
-		$mysqli->close();
 		return $notice;
 	}
 	
@@ -43,7 +43,7 @@
 	function signUp($signupFirstName, $signupFamilyName, $signupBirthDate, $gender, $signupEmail, $signupPassword){
 		//loome andmebaasiühenduse
 		
-	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		//valmistame ette käsu andmebaasiserverile
 		$stmt = $mysqli->prepare("INSERT INTO veebiproge (firstname, lastname, birthday, gender, email, password) VALUES (?, ?, ?, ?, ?, ?)");
 		echo $mysqli->error;
@@ -80,8 +80,26 @@
 		return $notice;
 	}
 	
+	//sisestuse kontrollimise funktsioon
+	function test_input($data){
+		$data = trim($data);//ebavajalikud tühiku jms eemaldada
+		$data = stripslashes($data);//kaldkriipsud jms eemaldada
+		$data = htmlspecialchars($data);//keelatud sümbolid
+		return $data;
+	}
+	
+	function genderText($genderDb) {
+		if ($genderDb == 1) {
+				$gender = "Male";
+				return $gender;
+			} 	elseif ($genderDb == 2) {
+				$gender = "Female";
+				return $gender;
+			}
+	}
+	
 	//kõikide ideede lugemisefunktsioon
-	function readAllIdeas() {
+	/* function readAllIdeas() {
 		$ideasHTML = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		$stmt = $mysqli->prepare("SELECT idea, ideaColor FROM vpuserideas WHERE userid = ? ORDER BY id DESC");
@@ -96,6 +114,23 @@
 		$mysqli->close();
 		return $ideasHTML;
 		
+	} */
+	
+	function readAllIdeas() {
+		$tableheads ="";
+		$notice="";
+		$table="";
+		//ühendus serveriga
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"],$GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT vpuserideas.idea, vpuserideas.ideacolor, vpuserideas.userid, veebiproge.firstname, veebiproge.lastname FROM vpuserideas INNER JOIN veebiproge on vpuserideas.userid = veebiproge.id ORDER BY vpuserideas.id DESC;");
+		$stmt->bind_result($ideaDb, $colorDb, $userID, $firstNameDb, $lastNameDb);
+		$stmt->execute();
+		while($stmt->fetch()){ 
+			$notice .= '<p style="background-color:'.$colorDb .'">'. $ideaDb .'<i> -' .$firstNameDb .' ' .$lastNameDb. "</i></p> \n";
+		}
+		$stmt->close();
+		$mysqli->close();
+		return $notice;
 	}
 	
 	// uusima idee lugemine
@@ -103,21 +138,14 @@
 		// $ideaHTML = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		$stmt = $mysqli->prepare("SELECT idea FROM vpuserideas WHERE id = (SELECT MAX(id) FROM vpuserideas)");
-		$stmt->bind_result($idea);
+		$stmt->bind_result($ideaDb);
 		$stmt->execute();
 		$stmt->fetch(); // kui fetchi ei tee siis andmeid ei saa
 		$stmt->close();
 		$mysqli->close();
-		return $idea;
+		return $ideaDb;
 	}
 	
-	//sisestuse kontrollimise funktsioon
-	function test_input($data){
-		$data = trim($data);//ebavajalikud tühiku jms eemaldada
-		$data = stripslashes($data);//kaldkriipsud jms eemaldada
-		$data = htmlspecialchars($data);//keelatud sümbolid
-		return $data;
-	}
 	
 	/*
 	$x = 5;
